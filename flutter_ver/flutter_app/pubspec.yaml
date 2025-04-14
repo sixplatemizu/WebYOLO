@@ -1,0 +1,25 @@
+name: flutter_yolo_app
+description: A Flutter app for YOLO image detection.
+
+environment:
+  sdk: '>=2.12.0 <3.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  http: ^0.13.3
+  image_picker: ^0.8.4+4
+  cached_network_image: ^3.2.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^2.0.0
+  flutter_launcher_icons: ^0.12.0
+
+flutter_icons:
+  image_path: "assets/icon/icon.png"
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/icon/icon.png

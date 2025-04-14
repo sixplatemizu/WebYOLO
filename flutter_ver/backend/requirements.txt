@@ -1,0 +1,9 @@
+fastapi
+uvicorn
+ultralytics
+opencv-python
+python-multipart
+plotly
+numpy
+scipy
+pandas
