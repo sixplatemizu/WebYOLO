@@ -1,0 +1,10 @@
+fastapi
+uvicorn
+torch
+torchvision
+opencv-python
+streamlit
+requests
+numpy
+ultralytics
+python-multipart
