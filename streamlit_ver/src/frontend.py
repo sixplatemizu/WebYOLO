@@ -3,7 +3,7 @@ import requests
 from PIL import Image
 import io
 
-st.title("My LOYO12")
+st.title("WebYOLO11")
 
 uploaded_file = st.file_uploader("上传图片", type=["jpg", "jpeg", "png", "webp"])
 
