@@ -4,15 +4,18 @@ import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'image_viewer.dart';
+import 'package:logging/logging.dart';
+
+final _logger = Logger('ImagePicker');
 
 class ImagePickerScreen extends StatefulWidget {
   const ImagePickerScreen({Key? key}) : super(key: key);
 
   @override
-  _ImagePickerScreenState createState() => _ImagePickerScreenState();
+  ImagePickerScreenState createState() => ImagePickerScreenState();
 }
 
-class _ImagePickerScreenState extends State<ImagePickerScreen> {
+class ImagePickerScreenState extends State<ImagePickerScreen> {
   File? _image;
   final picker = ImagePicker();
 
@@ -23,13 +26,13 @@ class _ImagePickerScreenState extends State<ImagePickerScreen> {
       if (pickedFile != null) {
         _image = File(pickedFile.path);
       } else {
-        print('No image selected.');
+        _logger.warning('No image selected');
       }
     });
   }
 
-  Future<void> _uploadImage() async {
-    if (_image == null) return;
+  Future<String?> _processImage() async {
+    if (_image == null) return null;
 
     var request = http.MultipartRequest('POST', Uri.parse('http://localhost:8000/detect'));
     request.files.add(await http.MultipartFile.fromPath('file', _image!.path));
@@ -38,32 +41,35 @@ class _ImagePickerScreenState extends State<ImagePickerScreen> {
 
     if (response.statusCode == 200) {
       var responseData = await response.stream.bytesToString();
-      var jsonResponse = json.decode(responseData);
-      String outputPath = jsonResponse['output_path'];
-      List<dynamic> keypoints = jsonResponse['keypoints'] ?? [];
-
-      File processedImage = File(outputPath);
-
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => ImageViewerScreen(
-            originalImage: _image!,
-            processedImage: processedImage,
-            keypoints: keypoints,
-          ),
-        ),
-      );
+      return json.decode(responseData)['output_path'];
     } else {
-      print('Failed to upload image.');
+      _logger.warning('Failed to upload image');
+      return null;
     }
+  }
+
+  Future<void> _handleImage() async {
+    final outputPath = await _processImage();
+    if (!mounted || outputPath == null) return;
+
+    File processedImage = File(outputPath);
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ImageViewerScreen(
+          originalImage: _image!,
+          processedImage: processedImage,
+          keypoints: [],
+        ),
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('YOLO Pose Detection'),
+        title: const Text('WebYOLO'),
       ),
       body: Center(
         child: Column(
@@ -79,7 +85,7 @@ class _ImagePickerScreenState extends State<ImagePickerScreen> {
             ),
             const SizedBox(height: 20),
             ElevatedButton(
-              onPressed: _uploadImage,
+              onPressed: _handleImage,
               child: const Text('Upload and Detect Pose'),
             ),
           ],
@@ -88,4 +94,3 @@ class _ImagePickerScreenState extends State<ImagePickerScreen> {
     );
   }
 }
-
