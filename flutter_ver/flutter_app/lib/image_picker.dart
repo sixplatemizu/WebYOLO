@@ -40,6 +40,7 @@ class _ImagePickerScreenState extends State<ImagePickerScreen> {
       var responseData = await response.stream.bytesToString();
       var jsonResponse = json.decode(responseData);
       String outputPath = jsonResponse['output_path'];
+      List<dynamic> keypoints = jsonResponse['keypoints'] ?? [];
 
       File processedImage = File(outputPath);
 
@@ -49,6 +50,7 @@ class _ImagePickerScreenState extends State<ImagePickerScreen> {
           builder: (context) => ImageViewerScreen(
             originalImage: _image!,
             processedImage: processedImage,
+            keypoints: keypoints,
           ),
         ),
       );
@@ -61,7 +63,7 @@ class _ImagePickerScreenState extends State<ImagePickerScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('YOLO Image Detection'),
+        title: const Text('YOLO Pose Detection'),
       ),
       body: Center(
         child: Column(
@@ -78,7 +80,7 @@ class _ImagePickerScreenState extends State<ImagePickerScreen> {
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: _uploadImage,
-              child: const Text('Upload and Detect'),
+              child: const Text('Upload and Detect Pose'),
             ),
           ],
         ),
@@ -86,3 +88,4 @@ class _ImagePickerScreenState extends State<ImagePickerScreen> {
     );
   }
 }
+

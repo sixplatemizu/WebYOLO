@@ -4,14 +4,19 @@ import 'package:flutter/material.dart';
 class ImageViewerScreen extends StatelessWidget {
   final File originalImage;
   final File processedImage;
+  final List<dynamic> keypoints;
 
-  const ImageViewerScreen({Key? key, required this.originalImage, required this.processedImage}) : super(key: key);
-
+  const ImageViewerScreen({
+    Key? key,
+    required this.originalImage,
+    required this.processedImage,
+    this.keypoints = const [],
+  }) : super(key: key);
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Image Viewer'),
+        title: const Text('Pose Detection Results'),
       ),
       body: Column(
         children: [
@@ -23,7 +28,7 @@ class ImageViewerScreen extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       const Text(
-                        '原始',
+                        'Original',
                         style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           ),
                       const SizedBox(height: 10),
@@ -38,16 +43,13 @@ class ImageViewerScreen extends StatelessWidget {
                     ],
                   ),
                 ),
-                const VerticalDivider(
-                  thickness: 2,
-                  color: Colors.grey,
-                ),
+                const VerticalDivider(thickness: 2, color: Colors.grey),
                 Expanded(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       const Text(
-                        '处理后',
+                        'Pose Detection',
                         style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 10),
@@ -65,6 +67,14 @@ class ImageViewerScreen extends StatelessWidget {
               ],
             ),
           ),
+          if (keypoints.isNotEmpty)
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text(
+                'Detected ${keypoints.length} person(s)',
+                style: const TextStyle(fontSize: 16),
+              ),
+      ),
         ],
       ),
     );
