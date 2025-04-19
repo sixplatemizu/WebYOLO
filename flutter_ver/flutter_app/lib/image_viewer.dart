@@ -5,18 +5,21 @@ class ImageViewerScreen extends StatelessWidget {
   final File originalImage;
   final File processedImage;
   final List<dynamic> keypoints;
+  final String mode;
 
   const ImageViewerScreen({
     Key? key,
     required this.originalImage,
     required this.processedImage,
     this.keypoints = const [],
+    required this.mode,
   }) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Pose Detection Results'),
+        title: Text('${mode == 'object' ? 'Object' : 'Pose'} Detection Results'),
       ),
       body: Column(
         children: [
@@ -48,9 +51,9 @@ class ImageViewerScreen extends StatelessWidget {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Text(
-                        'Pose Detection',
-                        style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                      Text(
+                        mode == 'object' ? 'Object Detection' : 'Pose Detection',
+                        style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 10),
                       Container(
@@ -67,7 +70,7 @@ class ImageViewerScreen extends StatelessWidget {
               ],
             ),
           ),
-          if (keypoints.isNotEmpty)
+          if (mode == 'pose' && keypoints.isNotEmpty)
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: Text(

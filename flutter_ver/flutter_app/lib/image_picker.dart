@@ -17,11 +17,11 @@ class ImagePickerScreen extends StatefulWidget {
 
 class ImagePickerScreenState extends State<ImagePickerScreen> {
   File? _image;
+  String _mode = 'object';
   final picker = ImagePicker();
 
   Future<void> _pickImage() async {
     final pickedFile = await picker.pickImage(source: ImageSource.gallery);
-
     setState(() {
       if (pickedFile != null) {
         _image = File(pickedFile.path);
@@ -31,17 +31,21 @@ class ImagePickerScreenState extends State<ImagePickerScreen> {
     });
   }
 
-  Future<String?> _processImage() async {
+  Future<Map<String, dynamic>?> _processImage() async {
     if (_image == null) return null;
 
-    var request = http.MultipartRequest('POST', Uri.parse('http://localhost:8000/detect'));
+    var request = http.MultipartRequest(
+      'POST',
+      Uri.parse('http://localhost:8000/detect')
+    );
+    request.fields['mode'] = _mode;
     request.files.add(await http.MultipartFile.fromPath('file', _image!.path));
 
     var response = await request.send();
 
     if (response.statusCode == 200) {
       var responseData = await response.stream.bytesToString();
-      return json.decode(responseData)['output_path'];
+      return json.decode(responseData);
     } else {
       _logger.warning('Failed to upload image');
       return null;
@@ -49,17 +53,18 @@ class ImagePickerScreenState extends State<ImagePickerScreen> {
   }
 
   Future<void> _handleImage() async {
-    final outputPath = await _processImage();
-    if (!mounted || outputPath == null) return;
+    final response = await _processImage();
+    if (!mounted || response == null || _image == null) return;
 
-    File processedImage = File(outputPath);
+    File processedImage = File(response['output_path']);
     Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => ImageViewerScreen(
           originalImage: _image!,
           processedImage: processedImage,
-          keypoints: [],
+          keypoints: _mode == 'pose' ? response['keypoints'] ?? [] : [],
+          mode: _mode,
         ),
       ),
     );
@@ -68,9 +73,7 @@ class ImagePickerScreenState extends State<ImagePickerScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('WebYOLO'),
-      ),
+      appBar: AppBar(title: const Text('WebYOLO')),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -78,6 +81,33 @@ class ImagePickerScreenState extends State<ImagePickerScreen> {
             _image == null
                 ? const Text('No image selected.')
                 : Image.file(_image!, height: 200),
+
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Text('Detection Mode:'),
+                const SizedBox(width: 10),
+                DropdownButton<String>(
+                  value: _mode,
+                  items: const [
+                    DropdownMenuItem(
+                      value: 'object',
+                      child: Text('Object Detection'),
+                    ),
+                    DropdownMenuItem(
+                      value: 'pose',
+                      child: Text('Pose Detection'),
+                    ),
+                  ],
+                  onChanged: (value) {
+                    setState(() {
+                      _mode = value!;
+                    });
+                  },
+                ),
+              ],
+            ),
+
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: _pickImage,
@@ -86,7 +116,7 @@ class ImagePickerScreenState extends State<ImagePickerScreen> {
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: _handleImage,
-              child: const Text('Upload and Detect Pose'),
+              child: Text('Upload and ${_mode == 'object' ? 'Detect Objects' : 'Detect Pose'}'),
             ),
           ],
         ),
