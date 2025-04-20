@@ -3,11 +3,11 @@
 ![Flutter](https://img.shields.io/badge/Flutter-%2302569B.svg?style=for-the-badge&logo=Flutter&logoColor=white)
 ![FastAPI](https://img.shields.io/badge/FastAPI-005571?style=for-the-badge&logo=fastapi)
 
-基于Flutter和YOLOv8的跨平台目标检测应用，支持Android/iOS/Web/Windows平台。
+基于Flutter和YOLO11的跨平台目标检测应用，支持Android/iOS/Web/Windows平台。
 
 ## ✨ 功能特性
 - 📸 多源图像获取：支持相册选取和相机拍摄
-- 🤖 YOLOv8集成：实时目标检测与姿态识别
+- 🤖 YOLO11集成：实时目标检测与姿态识别
 - 🌐 前后端分离：FastAPI后端处理检测请求
 - 📱 响应式UI：适配不同屏幕尺寸
 - 🖼️ 结果对比：并排显示原图与检测结果
@@ -21,7 +21,7 @@
 ### 前置要求
 - Flutter SDK ≥ 3.0
 - Python ≥ 3.8 (后端)
-- YOLOv8权重文件
+- YOLO11权重文件
 
 ### 安装步骤
 1. 克隆仓库
@@ -44,10 +44,10 @@
 |-|-|
 |Flutter 3.x|	跨平台UI框架|
 |FastAPI|	后端服务|
-|YOLOv8|	目标检测模型|
+|YOLO11|	目标检测模型|
 |http|	API通信|
 
 ### 📄 许可证
 MIT License © 2023 [Your Name]
 
-> 💡 提示：使用前请确保已配置YOLOv8模型文件至backend/models/目录
+>💡提示：使用前请确保已配置YOLO11模型文件至models目录
