@@ -6,8 +6,8 @@ from ultralytics import YOLO
 
 app = FastAPI()
 # 加载两种模型
-detection_model = YOLO('yolo11n.pt')  # 常规目标检测模型
-pose_model = YOLO('yolo11n-pose.pt')  # 姿态检测模型
+detection_model = YOLO('models/yolo11n.pt')  # 常规目标检测模型
+pose_model = YOLO('models/yolo11n-pose.pt')  # 姿态检测模型
 
 @app.post("/detect/")
 async def detect_objects(

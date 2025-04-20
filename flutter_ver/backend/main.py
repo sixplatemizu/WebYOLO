@@ -8,8 +8,8 @@ import os
 
 app = FastAPI()
 models = {
-    "object": YOLO("yolo11n.pt"),
-    "pose": YOLO("yolo11n-pose.pt")
+    "object": YOLO("models/yolo11n.pt"),
+    "pose": YOLO("models/yolo11n-pose.pt")
 }
 @app.post("/detect")
 async def detect(
